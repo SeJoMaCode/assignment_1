@@ -3,13 +3,23 @@
 
 // This is the address that we're connecting to.  
 // At that address, there's a server that connects everyone who has joined the game.  
-const socket = new WebSocket('wss://sckans-game-dev.uc.r.appspot.com/game_dev');
+const socket = new WebSocket('wss://southwestern.media/game_dev');
 
 // This is an "event listener".  It runs the interior commands each time you get a message (as managed by the websocket server).  
+socket.addEventListener('open', open => {
+    document.querySelector('.chat-stream').innerText += 'WEBSOCKETS OPENED\n'
+}); 
+
 socket.addEventListener('message', event => {
     const message = JSON.parse(event.data);
-    document.querySelector('.chat-stream').innerText += message.Game + ' :: ' + message.Name.toUpperCase() + ' > ' + message.Message + '\n';
+    document.querySelector('.chat-stream').innerText += message.Game + ' :: ' + message.Name.toUpperCase() + ' >> ' + message.Message + '\n';
 }); 
+
+const write_closed = () => {
+    document.querySelector('.chat-stream').innerText += 'WEBSOCKETS CLOSED\n'; 
+}; 
+socket.addEventListener('close', write_closed); 
+socket.addEventListener('error', write_closed); 
 
 // This sends your message to the websocket server.  
 // Our messages are pretty simple: they'll just have a game (the name of your game, to distinguish it from other games), a name (the name of the player), and a message which can be anything.  
